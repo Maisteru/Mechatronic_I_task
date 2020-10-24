@@ -12,3 +12,10 @@ z komputera i serial-to-parallel(szeregowo-równoległy) odpowiadając za konwer
 I2C(Inter-Integrated Circuit) - interfejs komunikacyjny działający w sposób synchroniczny, przeciwnie do UART. Oznacza to, że sygnał
 zegarowy przesyłany jest między układami. Układy I2C dzielimy na dwa rodzaje: master i slave. Ważny jest fakt, że interefejsy te mają
 tylko jedną linie komunikacyjną co ozanacz, że w danej chwili możemy albo odbierać albo wysyłać dane(tryb half-duplex).
+
+Mostek H - układ umożliwiający sterowanie kierunkiem obrotów silnika prądu stałego. Zbudowany on jest z czterech tranzystorów załączając 
+jednocześnie odpowiednio dwa z nich wymuszamy przepływ prądu przez silnik. 
+
+Czujniki cyfrowe po wykonaniu pomiaru dane są wysyłane za pomocą interfejsu komunikacyjnego. Czujniki analogowe po wykonaniu pomiaru 
+jego wynik w postaci napięcia jest wystawiany na pin czujnika. Wystawione napięcie jest proporcjonalne do odczytane wartości. Czujniki analogowe 
+narażone są bardziej na zakłócenia, lecz pozwalają na pomiar z większą częstotliwością.
