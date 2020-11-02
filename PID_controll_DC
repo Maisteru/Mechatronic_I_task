@@ -1,0 +1,50 @@
+#include <PID_v1.h>
+
+#define DALMIERZ_Echo 10  //obsługa czujnika
+#define DALMIERZ_Trig 11
+#define RIGHT 7           //obsługa kierunku obrotów
+#define LEFT 8
+#define motorPin 3        //obsługa prędkości obrotów
+
+int speed=255,odleglosc=0;
+double Setpoint, Input, Output;
+double Kp=2, Ki=5, Kd=1;
+PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
+
+void setup(){
+  pinMode(DALMIERZ_Trig,OUTPUT);
+  pinMode(DALMIERZ_Echo,INPUT);
+  pinMode(motorPin, OUTPUT);
+  pinMode(7, OUTPUT);
+  pinMode(8, OUTPUT);
+  Setpoint=10; //error = setPoint - Input
+  Input = odleglosc;
+  myPID.SetMode(AUTOMATIC);
+}
+
+void loop(){
+  // Odczyt odleglosci w celu kontoli silnika
+  digitalWrite(DALMIERZ_Trig, LOW);
+  delayMicroseconds(2);
+  digitalWrite(DALMIERZ_Trig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(DALMIERZ_Trig, LOW);
+  odleglosc=pulseIn(DALMIERZ_Echo, HIGH)/58;// 58 ms to czas dla ktorego dzwiek przebywa 1cm
+
+  Input = odleglosc;
+  myPID.Compute();
+  speed = Output;
+  //Kontrola pracy silnika
+  if(odleglosc<10){
+    digitalWrite(RIGHT, LOW); //Silnik - obroty w lewo
+    digitalWrite(LEFT, HIGH);
+    analogWrite(motorPin, speed);
+    delay(100);
+  }else
+  {
+    digitalWrite(RIGHT, HIGH); //Silnik - obroty w prawo
+    digitalWrite(LEFT, LOW);
+    analogWrite(motorPin, speed);
+    delay(100);
+  }
+}
