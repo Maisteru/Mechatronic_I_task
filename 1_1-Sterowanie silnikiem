@@ -1,0 +1,112 @@
+// Stepper motor control program 
+#define SW3 5
+#define SW2 6
+#define SW1 2
+#define STEPPER_IN1 9
+#define STEPPER_IN2 10
+#define STEPPER_IN3 11
+#define STEPPER_IN4 12
+
+int step_number = 0;
+int CountAtt    = 0;
+bool TurnedOn   = false;
+bool direction  = false;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(SW3, INPUT_PULLUP);
+  pinMode(SW2, INPUT_PULLUP);
+  pinMode(SW1, INPUT_PULLUP);
+  
+  pinMode(STEPPER_IN1, OUTPUT);
+  pinMode(STEPPER_IN2, OUTPUT);
+  pinMode(STEPPER_IN3, OUTPUT);
+  pinMode(STEPPER_IN4, OUTPUT);
+
+}
+
+void loop() {
+// Zalaczanie pracy silnika z software'owa filtracja drgan stykow
+  if(digitalRead(SW1)==LOW){
+    delay(20);
+    if(TurnedOn==false){
+      TurnedOn=true;
+      CountAtt++;
+      Serial.print("Liczba zalaczen: ");
+      Serial.println(CountAtt);
+    }
+    else TurnedOn=false;
+    while(digitalRead(SW1)==LOW);
+    delay(20);
+  }
+// Przelaczanie kierunku obrotu lewo/prawo
+  if(digitalRead(SW2)==LOW) direction=0;
+  if(digitalRead(SW3)==LOW) direction=1;
+// Jezeli zalaczony -> wykonaj funkcje pracy silnika krokowego
+  if(TurnedOn){
+    OneStep(direction);
+  }
+  delay(2);
+}
+
+//Funkcja pracy silnika krokowego
+void OneStep(bool dir){
+    if(dir){
+      switch(step_number){
+        case 0:
+        digitalWrite(STEPPER_IN1, HIGH);
+        digitalWrite(STEPPER_IN2, LOW);
+        digitalWrite(STEPPER_IN3, LOW);
+        digitalWrite(STEPPER_IN4, LOW);
+        break;
+        case 1:
+        digitalWrite(STEPPER_IN1, LOW);
+        digitalWrite(STEPPER_IN2, HIGH);
+        digitalWrite(STEPPER_IN3, LOW);
+        digitalWrite(STEPPER_IN4, LOW);
+        break;
+        case 2:
+        digitalWrite(STEPPER_IN1, LOW);
+        digitalWrite(STEPPER_IN2, LOW);
+        digitalWrite(STEPPER_IN3, HIGH);
+        digitalWrite(STEPPER_IN4, LOW);
+        break;
+        case 3:
+        digitalWrite(STEPPER_IN1, LOW);
+        digitalWrite(STEPPER_IN2, LOW);
+        digitalWrite(STEPPER_IN3, LOW);
+        digitalWrite(STEPPER_IN4, HIGH);
+        break;
+     } 
+    }else{
+      switch(step_number){
+        case 0:
+        digitalWrite(STEPPER_IN1, LOW);
+        digitalWrite(STEPPER_IN2, LOW);
+        digitalWrite(STEPPER_IN3, LOW);
+        digitalWrite(STEPPER_IN4, HIGH);
+        break;
+        case 1:
+        digitalWrite(STEPPER_IN1, LOW);
+        digitalWrite(STEPPER_IN2, LOW);
+        digitalWrite(STEPPER_IN3, HIGH);
+        digitalWrite(STEPPER_IN4, LOW);
+        break;
+        case 2:
+        digitalWrite(STEPPER_IN1, LOW);
+        digitalWrite(STEPPER_IN2, HIGH);
+        digitalWrite(STEPPER_IN3, LOW);
+        digitalWrite(STEPPER_IN4, LOW);
+        break;
+        case 3:
+        digitalWrite(STEPPER_IN1, HIGH);
+        digitalWrite(STEPPER_IN2, LOW);
+        digitalWrite(STEPPER_IN3, LOW);
+        digitalWrite(STEPPER_IN4, LOW);
+      } 
+   }
+  step_number++;
+  if(step_number > 3){
+    step_number = 0;
+  }
+}
